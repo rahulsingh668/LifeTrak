@@ -8,6 +8,8 @@ $name  = sanitize($b['name']  ?? '', 100);
 $email = strtolower(trim($b['email'] ?? ''));
 $pass  = $b['password'] ?? '';
 
+rate_limit('register_ip', client_ip(), 10, 3600);
+
 // ── Validation ────────────────────────────────────────────────────
 if (!$name)                         json_error('Name is required.');
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) json_error('Enter a valid email address.');
@@ -19,9 +21,9 @@ $stmt = db()->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
 $stmt->execute([$email]);
 if ($stmt->fetch()) json_error('An account with that email already exists.');
 
-// ── Create user ───────────────────────────────────────────────────
+// ── Create user (unverified until OTP confirmed) ──────────────────
 $hash = password_hash($pass, PASSWORD_BCRYPT, ['cost' => 12]);
-$stmt = db()->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+$stmt = db()->prepare("INSERT INTO users (name, email, password, email_verified) VALUES (?, ?, ?, 0)");
 $stmt->execute([$name, $email, $hash]);
 $userId = (int) db()->lastInsertId();
 
@@ -40,8 +42,7 @@ foreach ($defaultEvents as $ev) {
     ]);
 }
 
-// ── Issue session ─────────────────────────────────────────────────
-$token = new_session($userId);
-set_session_cookie($token);
+// ── Send verification code — session comes only after verify ─────
+issue_otp($userId, $email, $name);
 
-json_ok(['id' => $userId, 'name' => $name, 'email' => $email], 201);
+json_ok(['pending_verification' => true, 'email' => $email], 201);

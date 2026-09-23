@@ -1,0 +1,51 @@
+{
+  "packageId": "app.lifetrak.twa",
+  "host": "lifetrak.app",
+  "name": "LifeTrak",
+  "launcherName": "LifeTrak",
+  "display": "standalone",
+  "themeColor": "#4F7EF8",
+  "themeColorDark": "#000000",
+  "navigationColor": "#0B0B0F",
+  "navigationColorDark": "#0B0B0F",
+  "navigationDividerColor": "#0B0B0F",
+  "navigationDividerColorDark": "#0B0B0F",
+  "backgroundColor": "#FFFFFF",
+  "enableNotifications": false,
+  "startUrl": "/app",
+  "iconUrl": "http://localhost:8899/icon-512.png",
+  "maskableIconUrl": "http://localhost:8899/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "15",
+  "appVersionCode": 2,
+  "shortcuts": [
+    {
+      "name": "Add expense",
+      "shortName": "Add",
+      "url": "https://lifetrak.app/app?action=add",
+      "chosenIconUrl": "http://localhost:8899/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "http://localhost:8899/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://lifetrak.app/",
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "displayOverride": [],
+  "appVersion": "15"
+}

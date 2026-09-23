@@ -1,0 +1,4 @@
+uploads/
+.env
+api/config/db.local.php
+.DS_Store

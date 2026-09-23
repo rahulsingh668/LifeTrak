@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="enableNotification">false</bool>
+    <bool name="enableSiteSettingsShortcut">true</bool>
+    <color name="backgroundColor">#FFFFFF</color>
+    <color name="colorPrimary">#4F7EF8</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="navigationColor">#0B0B0F</color>
+    <color name="navigationColorDark">#0B0B0F</color>
+    <color name="navigationDividerColor">#0B0B0F</color>
+    <color name="navigationDividerColorDark">#0B0B0F</color>
+    <color name="shortcut_background">#F5F5F5</color>
+    <integer name="splashScreenFadeOutDuration">300</integer>
+    <string name="appName" translatable="false">LifeTrak</string>
+    <string name="assetStatements">
+    [{
+        \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+        \"target\": {
+            \"namespace\": \"web\",
+            \"site\": \"https://lifetrak.app\"
+        }
+    }]
+    
+  </string>
+    <string name="fallbackType" translatable="false">customtabs</string>
+    <string name="fullScopeUrl" translatable="false">https://lifetrak.app/</string>
+    <string name="generatorApp" translatable="false">bubblewrap-cli</string>
+    <string name="hostName" translatable="false">lifetrak.app</string>
+    <string name="launchUrl" translatable="false">https://lifetrak.app/app</string>
+    <string name="launcherName" translatable="false">LifeTrak</string>
+    <string name="orientation" translatable="false">portrait</string>
+    <string name="providerAuthority" translatable="false">app.lifetrak.twa.fileprovider</string>
+    <string name="shortcut_name_0" translatable="false">Add expense</string>
+    <string name="shortcut_short_name_0" translatable="false">Add</string>
+    <string name="webManifestUrl" translatable="false">http://localhost:8899/manifest.json</string>
+</resources>

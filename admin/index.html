@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>LifeTrak Admin</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#0b0b0f;--card:#141419;--line:#26262c;--text:#f5f5f7;--mute:#86868b;
+    --blue:#4f7ef8;--green:#34c77b;--amber:#d9a441}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);
+    font-size:14px;min-height:100vh;min-height:100svh;-webkit-font-smoothing:antialiased}
+  .top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;
+    padding:14px max(20px,env(safe-area-inset-left));background:rgba(11,11,15,.85);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .top img{width:26px;height:26px;border-radius:7px}
+  .top h1{font-size:16px;font-weight:700;letter-spacing:-.3px}
+  .top .tag{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    background:rgba(79,126,248,.15);color:#8fb0ff;padding:3px 8px;border-radius:99px}
+  .top .refresh{margin-left:auto;background:var(--card);border:1px solid var(--line);color:var(--text);
+    border-radius:9px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer}
+  .wrap{max-width:960px;margin:0 auto;padding:22px 20px 60px}
+  .state{padding:70px 20px;text-align:center;color:var(--mute);font-size:14px;line-height:1.6}
+  .state a{color:var(--blue)}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:26px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+  .stat .n{font-size:26px;font-weight:800;letter-spacing:-.8px}
+  .stat .l{font-size:11.5px;color:var(--mute);margin-top:3px;font-weight:500}
+  .stat .d{font-size:11px;color:var(--green);margin-top:5px;font-weight:600}
+
+  .bar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .bar h2{font-size:15px;font-weight:700;margin-right:auto}
+  .search{background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--text);
+    padding:8px 12px;font-size:13px;width:210px;font-family:inherit}
+  select{background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--text);
+    padding:8px 10px;font-size:13px;font-family:inherit}
+
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;overflow:hidden}
+  thead th{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);
+    text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);background:#17171d}
+  tbody td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  .u-name{font-weight:600;font-size:13.5px}
+  .u-mail{font-size:12px;color:var(--mute)}
+  .num{font-variant-numeric:tabular-nums;font-weight:600}
+  .badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px}
+  .badge.ok{background:rgba(52,199,123,.14);color:var(--green)}
+  .badge.no{background:rgba(217,164,65,.14);color:var(--amber)}
+  .dim{color:var(--mute);font-size:12px}
+  @media(max-width:640px){
+    .hide-m{display:none}
+    thead th,tbody td{padding:10px 10px}
+    .search{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="top">
+  <img src="/icons/icon-192.png" alt="">
+  <h1>LifeTrak</h1><span class="tag">Admin</span>
+  <button class="refresh" onclick="load()">↻ Refresh</button>
+</div>
+
+<div class="wrap">
+  <div id="content"><div class="state">Loading…</div></div>
+</div>
+
+<script>
+const $c = document.getElementById('content');
+let DATA = null, sortBy = 'joined';
+
+function fmtDate(d){
+  if(!d) return '—';
+  return new Date(d.replace(' ','T')).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+function esc(s){const d=document.createElement('div');d.textContent=s??'';return d.innerHTML}
+
+async function load(){
+  $c.innerHTML = '<div class="state">Loading…</div>';
+  let res, json;
+  try {
+    res = await fetch('/api/admin/stats', { credentials:'same-origin' });
+    json = await res.json();
+  } catch(e){
+    $c.innerHTML = '<div class="state">Network error — check your connection and refresh.</div>'; return;
+  }
+  if (res.status === 401){
+    $c.innerHTML = '<div class="state">You\'re not signed in.<br><a href="/app">Sign in to LifeTrak</a> with the admin account, then come back.</div>'; return;
+  }
+  if (res.status === 403){
+    $c.innerHTML = '<div class="state">This account isn\'t authorized to view the admin panel.</div>'; return;
+  }
+  if (!json.ok){
+    $c.innerHTML = '<div class="state">'+esc(json.error||'Something went wrong.')+'</div>'; return;
+  }
+  DATA = json.data;
+  render();
+}
+
+function render(){
+  const t = DATA.totals;
+  const q = (document.getElementById('q')?.value || '').toLowerCase();
+  let users = DATA.users.filter(u =>
+    !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+  users.sort((a,b)=>{
+    if (sortBy==='events')   return b.events_created - a.events_created;
+    if (sortBy==='expenses') return b.expenses_logged - a.expenses_logged;
+    if (sortBy==='activity') return (b.last_activity||'').localeCompare(a.last_activity||'');
+    return (b.joined||'').localeCompare(a.joined||'');
+  });
+
+  $c.innerHTML = `
+    <div class="cards">
+      <div class="stat"><div class="n">${t.users}</div><div class="l">Total users</div>
+        ${t.new_7d?`<div class="d">+${t.new_7d} this week</div>`:''}</div>
+      <div class="stat"><div class="n">${t.verified}</div><div class="l">Verified</div></div>
+      <div class="stat"><div class="n">${t.events}</div><div class="l">Events created</div></div>
+      <div class="stat"><div class="n">${t.expenses}</div><div class="l">Expenses logged</div></div>
+      <div class="stat"><div class="n">${t.shared_users}</div><div class="l">Users in shared events</div></div>
+    </div>
+
+    <div class="bar">
+      <h2>Users</h2>
+      <input class="search" id="q" placeholder="Search name or email…" value="${esc(q)}" oninput="render()">
+      <select onchange="sortBy=this.value;render()">
+        <option value="joined"${sortBy==='joined'?' selected':''}>Newest first</option>
+        <option value="events"${sortBy==='events'?' selected':''}>Most events</option>
+        <option value="expenses"${sortBy==='expenses'?' selected':''}>Most expenses</option>
+        <option value="activity"${sortBy==='activity'?' selected':''}>Recently active</option>
+      </select>
+    </div>
+
+    <table>
+      <thead><tr>
+        <th>User</th><th>Status</th><th class="hide-m">Joined</th>
+        <th>Events</th><th class="hide-m">Expenses</th><th>Last activity</th>
+      </tr></thead>
+      <tbody>
+        ${users.map(u=>`<tr>
+          <td><div class="u-name">${esc(u.name)}</div><div class="u-mail">${esc(u.email)}</div></td>
+          <td>${u.verified?'<span class="badge ok">Verified</span>':'<span class="badge no">Pending</span>'}</td>
+          <td class="hide-m dim">${fmtDate(u.joined)}</td>
+          <td class="num">${u.events_created}</td>
+          <td class="num hide-m">${u.expenses_logged}</td>
+          <td class="dim">${fmtDate(u.last_activity)}</td>
+        </tr>`).join('') || '<tr><td colspan="6" class="dim" style="text-align:center;padding:28px">No users match.</td></tr>'}
+      </tbody>
+    </table>`;
+  const qEl = document.getElementById('q');
+  if (q && qEl){ qEl.focus(); qEl.setSelectionRange(q.length,q.length); }
+}
+
+load();
+</script>
+</body>
+</html>

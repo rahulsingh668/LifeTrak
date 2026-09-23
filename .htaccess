@@ -1,0 +1,49 @@
+Options -Indexes
+Options +FollowSymLinks
+RewriteEngine On
+
+# Android TWA verification — must be reachable exactly at this path
+RewriteRule ^\.well-known/assetlinks\.json$ - [L]
+<Files "assetlinks.json">
+  Header set Content-Type "application/json"
+  Header set Access-Control-Allow-Origin "*"
+  Header set Cache-Control "no-cache"
+</Files>
+
+Header always set X-Frame-Options "DENY"
+Header always set X-Content-Type-Options "nosniff"
+
+<Files "sw.js">
+  Header set Service-Worker-Allowed "/"
+  Header set Cache-Control "no-cache"
+</Files>
+<Files "manifest.json">
+  Header set Cache-Control "no-cache, must-revalidate"
+</Files>
+<FilesMatch "\.html$">
+  Header set Cache-Control "no-cache, must-revalidate"
+</FilesMatch>
+<FilesMatch "\.(css|js|png|ico|svg|woff2)$">
+  Header set Cache-Control "public, max-age=604800"
+</FilesMatch>
+
+RewriteRule ^api/auth/register/?$       api/auth/register.php      [L,QSA]
+RewriteRule ^api/auth/login/?$          api/auth/login.php         [L,QSA]
+RewriteRule ^api/auth/logout/?$         api/auth/logout.php        [L,QSA]
+RewriteRule ^api/auth/me/?$             api/auth/me.php            [L,QSA]
+RewriteRule ^api/auth/verify-otp/?$     api/auth/verify-otp.php    [L,QSA]
+RewriteRule ^api/auth/resend-otp/?$     api/auth/resend-otp.php    [L,QSA]
+RewriteRule ^api/auth/forgot-password/?$ api/auth/forgot-password.php [L,QSA]
+RewriteRule ^api/auth/reset-password/?$  api/auth/reset-password.php  [L,QSA]
+RewriteRule ^api/admin/stats/?$          api/admin/stats.php          [L,QSA]
+RewriteRule ^api/account/?$              api/account/index.php        [L,QSA]
+RewriteRule ^api/events/invite/?$       api/events/invite.php      [L,QSA]
+RewriteRule ^api/events/([0-9]+)/members/([0-9]+)/?$ api/events/members.php?event_id=$1&member_id=$2 [L,QSA]
+RewriteRule ^api/events/([0-9]+)/leave/?$ api/events/leave.php?event_id=$1 [L,QSA]
+RewriteRule ^api/events/([0-9]+)/?$     api/events/item.php?id=$1  [L,QSA]
+RewriteRule ^api/events/?$              api/events/index.php       [L,QSA]
+RewriteRule ^api/expenses/([0-9]+)/?$   api/expenses/item.php?id=$1 [L,QSA]
+RewriteRule ^api/expenses/?$            api/expenses/index.php     [L,QSA]
+RewriteRule ^api/receipts/upload/?$     api/receipts/upload.php    [L,QSA]
+RewriteRule ^api/analytics/?$           api/analytics/index.php    [L,QSA]
+RewriteRule ^app/?$                     app/index.html             [L]

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="LifeTrak">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png">
+  <title>LifeTrak</title>
+  <script>
+    // Capture install prompt BEFORE app scripts load — Chrome can fire this
+    // very early and a late listener misses it forever.
+    window._bipEvent = null;
+    window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); window._bipEvent = e; });
+  </script>
+  <link rel="stylesheet" href="/src/style.css?v=13">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app"></div>
+  <div id="toast-container"></div>
+  <script src="/src/data.js?v=13"></script>
+  <script src="/src/api.js?v=13"></script>
+  <script src="/src/store.js?v=13"></script>
+  <script src="/src/render.js?v=13"></script>
+  <script src="/src/app.js?v=13"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+          navigator.serviceWorker.addEventListener('message', e => {
+            if (e.data?.type === 'SYNC_EXPENSES') App.syncQueue();
+          });
+          window.addEventListener('offline', async () => {
+            if ('sync' in reg) await reg.sync.register('sync-expenses').catch(()=>{});
+          });
+        } catch(e) { console.warn('SW:', e); }
+      });
+    }
+  </script>
+</body>
+</html>

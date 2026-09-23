@@ -1,14 +1,10 @@
 <?php
-// ── Database connection ───────────────────────────────────────────
-// Copy this file to api/config/db.local.php on your server
-// and fill in real credentials. Never commit credentials to Git.
-
-define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-define('DB_NAME', getenv('DB_NAME') ?: 'lifetrak');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '');
-define('APP_SECRET', getenv('APP_SECRET') ?: 'change-this-secret-before-deploy');
-define('APP_ENV', getenv('APP_ENV') ?: 'production');
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'u983506717_lifetrak');
+define('DB_USER', 'u983506717_lifetrakadmin');
+define('DB_PASS', 'TravTrak@2026');
+define('APP_SECRET', 'lifetrak-tara-rahul-2026-x9k2m7p4q1n8r3s5');
+define('APP_ENV', 'production');
 
 function db(): PDO {
     static $pdo = null;
